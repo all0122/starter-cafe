@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>클로드코드 수업 사전질문지</title>
+<style>
+  :root{
+    --bg: #F5F3FB;
+    --paper: #FFFFFF;
+    --ink: #3B3358;
+    --ink-soft: #756C8E;
+    --accent: #8478BC;
+    --accent-deep: #5F5490;
+    --highlight: #A79ADA;
+    --line: #DDD6EF;
+    --line-soft: #ECE7F8;
+    --radius: 18px;
+    --shadow: 0 10px 30px rgba(59,51,88,0.08);
+    --font: "Malgun Gothic", "맑은 고딕", "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 6%, rgba(132,120,188,0.08), transparent 42%),
+      radial-gradient(circle at 92% 90%, rgba(167,154,218,0.12), transparent 45%);
+    color: var(--ink);
+    font-family: var(--font);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    display:flex;
+    justify-content:center;
+  }
+  .app{
+    width: 100%;
+    max-width: 560px;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+
+  /* ---------- Header (sticky progress) ---------- */
+  header{
+    padding: 22px 24px 16px;
+    position: sticky;
+    top:0;
+    background: linear-gradient(180deg, var(--bg) 82%, rgba(245,243,251,0));
+    z-index: 5;
+  }
+  .brand-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 14px;
+  }
+  .brand{
+    font-weight:700;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+  }
+  .brand em{
+    color: var(--accent-deep);
+    font-style: normal;
+  }
+  .step-label{
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight:700;
+    letter-spacing:0.02em;
+  }
+
+  .drip-wrap{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .cup-svg{ flex-shrink:0; width:36px; height:32px; }
+  .drip-track{
+    flex:1;
+    height: 8px;
+    background: var(--line-soft);
+    border-radius: 999px;
+    overflow:hidden;
+    position:relative;
+  }
+  .drip-fill{
+    position:absolute;
+    inset:0;
+    width: 0%;
+    background: linear-gradient(90deg, var(--highlight), var(--accent-deep));
+    border-radius: 999px;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ---------- Main scroll content ---------- */
+  main{
+    flex:1;
+    padding: 4px 24px 130px;
+    display:flex;
+    flex-direction:column;
+    gap: 18px;
+  }
+
+  .intro-card{
+    background: var(--paper);
+    border-radius: 22px;
+    padding: 26px 22px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line-soft);
+    margin-top: 4px;
+  }
+  .intro-card h1{
+    font-size: 23px;
+    font-weight:700;
+    line-height:1.4;
+    margin: 0 0 14px;
+  }
+  .intro-card p{
+    font-size:14.5px;
+    line-height:1.7;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+  .intro-meta{
+    display:flex;
+    gap:8px;
+    margin: 18px 0 6px;
+    flex-wrap:wrap;
+  }
+  .chip{
+    font-size:12px;
+    font-weight:700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--line-soft);
+    color: var(--accent-deep);
+    border: 1px solid var(--line);
+  }
+  .course-info{
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .course-info-title{
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--accent-deep);
+    margin-bottom: 8px;
+  }
+  .course-info-text{
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .course-info-text strong{
+    color: var(--accent-deep);
+    font-weight: 800;
+  }
+  .course-list{
+    margin: 0;
+    padding-left: 18px;
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+  }
+  .course-list li{
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .course-list-sub{
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .name-field{ margin-top: 20px; }
+  .name-field label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color: var(--ink-soft);
+    margin-bottom:8px;
+  }
+
+  /* ---------- Question cards (all stacked, scrollable) ---------- */
+  .q-card{
+    background: var(--paper);
+    border-radius: 20px;
+    padding: 22px 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line-soft);
+    transition: box-shadow .25s, border-color .25s;
+  }
+  .q-card.flash{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(132,120,188,0.25);
+  }
+  .eyebrow{
+    font-size: 12px;
+    font-weight:800;
+    letter-spacing:0.04em;
+    color: var(--accent-deep);
+    margin-bottom:8px;
+  }
+  h2.q-title{
+    font-weight: 700;
+    font-size: 18.5px;
+    line-height:1.5;
+    margin: 0 0 4px;
+    color: var(--ink);
+  }
+  .q-sub{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    line-height:1.5;
+  }
+  .q-title + .options, .q-title + .etc-wrap, .q-sub + .options{
+    margin-top: 16px;
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap: 9px;
+    margin-top: 16px;
+  }
+  .opt{
+    border: 1.5px solid var(--line);
+    background: #FBFAFE;
+    border-radius: 14px;
+    padding: 13px 15px;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    cursor:pointer;
+    transition: border-color .18s, background .18s, transform .12s;
+    font-size: 14.5px;
+    line-height:1.4;
+    color: var(--ink);
+  }
+  .opt:hover{ border-color: var(--accent); }
+  .opt:active{ transform: scale(0.99); }
+  .opt.selected{
+    border-color: var(--accent);
+    background: var(--line-soft);
+  }
+  .opt .mark{
+    width: 19px;
+    height:19px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+  }
+  .opt.selected .mark{ border-color: var(--accent); background: var(--accent); }
+  .opt.selected .mark::after{
+    content:"";
+    width:7px; height:7px;
+    border-radius:50%;
+    background:#fff;
+  }
+
+  textarea, input[type="text"]{
+    width:100%;
+    border: 1.5px solid var(--line);
+    background: #FBFAFE;
+    border-radius: 14px;
+    padding: 13px 15px;
+    font-family: var(--font);
+    font-size:14.5px;
+    color: var(--ink);
+    resize: vertical;
+    min-height: 44px;
+    outline: none;
+    transition: border-color .18s;
+  }
+  textarea{ min-height: 100px; margin-top:16px; }
+  textarea:focus, input[type="text"]:focus{ border-color: var(--accent); }
+  textarea::placeholder, input::placeholder{ color:#B7AFD1; }
+  .etc-wrap{ margin-top:16px; }
+  .etc-input{ display:none; }
+  .etc-input.show{ display:block; margin-top:10px; }
+  .hint-optional{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:8px;
+  }
+  .q-index-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:22px;height:22px;
+    border-radius:50%;
+    background: var(--line-soft);
+    color: var(--accent-deep);
+    font-size:12px;
+    font-weight:800;
+    margin-right:6px;
+  }
+
+  /* ---------- Sticky submit bar ---------- */
+  .submit-bar{
+    position:fixed;
+    left:50%;
+    transform: translateX(-50%);
+    bottom:0;
+    width:100%;
+    max-width:560px;
+    padding: 14px 24px 24px;
+    background: linear-gradient(180deg, rgba(245,243,251,0), var(--bg) 32%);
+    z-index: 6;
+  }
+  button.submit-btn{
+    width:100%;
+    border:none;
+    border-radius: 16px;
+    padding: 16px 0;
+    font-size:15.5px;
+    font-weight:700;
+    font-family: var(--font);
+    cursor:pointer;
+    background: var(--ink);
+    color: #FFFFFF;
+    transition: opacity .15s, transform .1s;
+  }
+  button.submit-btn:active{ transform: scale(0.98); }
+  button.submit-btn .sub-note{
+    display:block;
+    font-size:11.5px;
+    font-weight:500;
+    opacity:0.75;
+    margin-top:2px;
+  }
+
+  /* ---------- Result screen ---------- */
+  .hidden-view{ display:none; }
+  .result-card{
+    background: var(--paper);
+    border-radius: 22px;
+    padding: 24px 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line-soft);
+  }
+  .result-card h2{
+    font-size:20px;
+    font-weight:700;
+    margin: 0 0 4px;
+  }
+  .result-card .result-sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 18px;
+  }
+  .send-status{
+    font-size: 13px;
+    font-weight: 700;
+    padding: 12px 14px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .send-status.ok{
+    background: #EDE7FA;
+    color: var(--accent-deep);
+  }
+  .send-status.fail{
+    background: #FBEAEA;
+    color: #A83C3C;
+  }
+  .result-list{
+    display:flex;
+    flex-direction:column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .result-row{
+    border-top: 1px solid var(--line-soft);
+    padding-top: 12px;
+  }
+  .result-row .rq{
+    font-size:12px;
+    color: var(--accent-deep);
+    font-weight:800;
+    margin-bottom:4px;
+  }
+  .result-row .ra{
+    font-size:14.5px;
+    line-height:1.5;
+    color: var(--ink);
+  }
+  .copy-box{
+    background: var(--line-soft);
+    border:1px dashed var(--line);
+    border-radius:14px;
+    padding:14px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    white-space:pre-wrap;
+    line-height:1.6;
+    max-height:220px;
+    overflow:auto;
+    margin-bottom:14px;
+  }
+  .copy-btn{
+    width:100%;
+    border:none;
+    background: var(--ink);
+    color: #fff;
+    padding:16px 0;
+    border-radius:14px;
+    font-size:15.5px;
+    font-weight:700;
+    cursor:pointer;
+    margin-bottom:10px;
+  }
+  .copy-btn.copied{ background: var(--accent-deep); }
+  .redo-btn{
+    width:100%;
+    border:1.5px solid var(--line);
+    background:transparent;
+    color:var(--ink-soft);
+    padding:13px 0;
+    border-radius:14px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:700;
+    font-family: var(--font);
+  }
+  .result-note{
+    font-size:12.5px;
+    color: var(--ink-soft);
+    text-align:center;
+    margin-top:16px;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="brand-row">
+      <div class="brand">클로드코드 <em>사전질문지</em></div>
+      <div class="step-label" id="stepLabel">0 / 9 완료</div>
+    </div>
+    <div class="drip-wrap">
+      <svg class="cup-svg" viewBox="0 0 40 36" fill="none">
+        <path d="M6 10h24l-2.2 16.5A5 5 0 0 1 22.85 31H13.15a5 5 0 0 1-4.95-4.5L6 10Z" stroke="#3B3358" stroke-width="1.6" fill="#FBFAFE"/>
+        <path d="M30 13c4 0 6 2.3 6 5.2s-2 5.2-6 5.2" stroke="#3B3358" stroke-width="1.6"/>
+      </svg>
+      <div class="drip-track"><div class="drip-fill" id="dripFill"></div></div>
+    </div>
+  </header>
+
+  <main id="mainView">
+
+    <div class="intro-card">
+      <h1>수업 전, 몇 가지만 여쭤볼게요</h1>
+      <p>클로드코드 수업을 준비하기 위한 사전질문지입니다. 정답이 있는 질문이 아니니, 지금 상태를 편하게 체크해주세요.</p>
+      <p>아래로 스크롤하며 하나씩 답해주시고, 끝까지 답하시면 맨 아래 버튼을 눌러 제출해주세요. 제출하면 자동으로 강사님께 전달됩니다.</p>
+      <div class="intro-meta">
+        <span class="chip">객관식 9문항</span>
+        <span class="chip">주관식 1문항</span>
+        <span class="chip">약 1분 소요</span>
+      </div>
+
+      <div class="course-info">
+        <div class="course-info-title">어떤 수업인가요?</div>
+        <p class="course-info-text">코드를 하나도 몰라도, 오늘 수업이 끝나면 <strong>나만의 간단한 앱 하나를 직접 만들어 가져갑니다.</strong> "클로드코드"라는 AI 도구에게 원하는 것을 말로 요청하면서, 실제로 동작하는 결과물을 완성하는 수업입니다.</p>
+      </div>
+
+      <div class="course-info">
+        <div class="course-info-title">수업을 마치면</div>
+        <ul class="course-list">
+          <li>카페 운영에 쓸 수 있는 작은 기능 하나가 실제로 완성된 상태로 남습니다.<br><span class="course-list-sub">(화려한 앱이 아니라, 오늘 직접 만들어서 눌러볼 수 있는 나만의 결과물입니다)</span></li>
+          <li>이후에도 혼자 AI에게 다음 기능을 요청해볼 수 있는 기본적인 방법을 익히게 됩니다.</li>
+        </ul>
+      </div>
+
+      <div class="name-field">
+        <label for="nameInput">이름 (선택)</label>
+        <input type="text" id="nameInput" placeholder="예: 이OO 사장님">
+      </div>
+    </div>
+
+    <div id="questionMount"></div>
+
+  </main>
+
+  <div class="submit-bar" id="submitBar">
+    <button class="submit-btn" id="submitBtn">제출하기</button>
+  </div>
+
+  <main class="hidden-view" id="resultView">
+    <div class="result-card">
+      <h2>확인해주세요</h2>
+      <p class="result-sub">제출이 완료되었습니다. 아래는 확인용 내용입니다.</p>
+      <div class="send-status" id="sendStatus"></div>
+      <div class="result-list" id="resultList"></div>
+      <div class="copy-box" id="copyBox"></div>
+      <button class="copy-btn" id="copyBtn">결과 복사하기</button>
+      <button class="redo-btn" id="redoBtn">답변 다시 확인하기</button>
+      <div class="result-note">수업 준비에 참고할 목적으로만 사용되며,<br>답변에는 정답이나 오답이 없습니다.</div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+const questions = [
+  {
+    id: "q1",
+    eyebrow: "01 · 첫 느낌",
+    title: `"코딩"이라는 단어를 들었을 때 가장 가까운 느낌은?`,
+    type: "single",
+    options: [
+      "나와는 거리가 먼 전문 영역",
+      "궁금하지만 막막함",
+      "해볼 만하다고 생각함",
+      "이미 알아본 적 있음"
+    ]
+  },
+  {
+    id: "q2",
+    eyebrow: "02 · AI 경험",
+    title: `ChatGPT나 Claude 같은 AI 챗봇 사용 경험은?`,
+    type: "single",
+    options: [
+      "전혀 없음",
+      "몇 번 써본 정도",
+      "종종 사용함",
+      "자주 활용함"
+    ]
+  },
+  {
+    id: "q3",
+    eyebrow: "03 · 사용 도구",
+    title: `주로 사용하는 생성형 AI 도구는?`,
+    type: "single-etc",
+    options: [
+      "없음 / 써본 적 없음",
+      "ChatGPT",
+      "Claude",
+      "Gemini",
+      "기타"
+    ]
+  },
+  {
+    id: "q4",
+    eyebrow: "04 · 기대치",
+    title: `"AI가 말만 하면 앱을 만들어준다"는 말, 실제로 어느 정도 기대하시나요?`,
+    type: "single",
+    options: [
+      "거의 다 자동으로 될 것 같다",
+      "사람이 손을 좀 대야 할 것 같다",
+      "잘 모르겠다, 오늘 감을 잡고 싶다"
+    ]
+  },
+  {
+    id: "q5",
+    eyebrow: "05 · 학습 방식",
+    title: `새로운 걸 배울 때 편한 방식은?`,
+    type: "single",
+    options: [
+      "설명을 먼저 충분히 듣고 시작",
+      "간단한 설명 후 바로 해보기",
+      "일단 해보고 막히면 물어보기"
+    ]
+  },
+  {
+    id: "q6",
+    eyebrow: "06 · 속도감",
+    title: `오늘 배우는 걸 활용하고 싶은 속도감은?`,
+    type: "single",
+    options: [
+      "당장 급한 문제부터 빨리 해결",
+      "천천히 익혀서 차근차근 적용"
+    ]
+  },
+  {
+    id: "q7",
+    eyebrow: "07 · 카페 운영",
+    title: `카페 운영에서 가장 먼저 손대고 싶은 부분은?`,
+    type: "single",
+    options: [
+      "주문 / 결제",
+      "재고 / 원두관리",
+      "포인트 / 멤버십",
+      "유통 / 교육",
+      "아직 명확하지 않음"
+    ]
+  },
+  {
+    id: "q8",
+    eyebrow: "08 · 컴퓨터",
+    title: `사용하는 컴퓨터는?`,
+    type: "single",
+    options: [
+      "Mac",
+      "Windows"
+    ]
+  },
+  {
+    id: "q9",
+    eyebrow: "09 · 환경 익숙함",
+    title: `새 프로그램 설치·설정 변경에 대한 익숙함은?`,
+    type: "single",
+    options: [
+      "편함",
+      "해봤지만 긴장됨",
+      "도움이 필요함"
+    ]
+  },
+  {
+    id: "q10",
+    eyebrow: "10 · 하고 싶은 것",
+    title: `카페 앱 외에 평소 해보고 싶었던 것이 있다면 짧게 적어주세요.`,
+    sub: "없으면 비워두셔도 됩니다.",
+    type: "text"
+  }
+];
+
+const requiredIds = questions.filter(q => q.type !== "text").map(q => q.id);
+const answers = {};
+
+const SUPABASE_URL = "https://vqeykyhhyrmqiapkmjal.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxZXlreWhoeXJtcWlhcGttamFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxNTAxMTYsImV4cCI6MjA5NDcyNjExNn0.x-wOTHyC5IMx0jL0S2hld8LCc6-9mBnDbLc53dhlo7Q";
+
+async function sendToSupabase(payload) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/cafe_course_survey`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(payload)
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+const mount = document.getElementById("questionMount");
+const stepLabel = document.getElementById("stepLabel");
+const dripFill = document.getElementById("dripFill");
+const nameInput = document.getElementById("nameInput");
+const submitBtn = document.getElementById("submitBtn");
+
+questions.forEach((q, idx) => {
+  const card = document.createElement("div");
+  card.className = "q-card";
+  card.id = "card-" + q.id;
+
+  const eyebrow = document.createElement("div");
+  eyebrow.className = "eyebrow";
+  eyebrow.textContent = q.eyebrow;
+  card.appendChild(eyebrow);
+
+  const h2 = document.createElement("h2");
+  h2.className = "q-title";
+  h2.innerHTML = `<span class="q-index-badge">${idx+1}</span>${q.title}`;
+  card.appendChild(h2);
+
+  if (q.sub) {
+    const sub = document.createElement("p");
+    sub.className = "q-sub";
+    sub.textContent = q.sub;
+    card.appendChild(sub);
+  }
+
+  if (q.type === "single" || q.type === "single-etc") {
+    const opts = document.createElement("div");
+    opts.className = "options";
+    q.options.forEach(label => {
+      const opt = document.createElement("div");
+      opt.className = "opt";
+      opt.innerHTML = `<span class="mark"></span><span>${label}</span>`;
+      opt.addEventListener("click", () => {
+        opts.querySelectorAll(".opt").forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
+        answers[q.id] = label;
+        card.classList.remove("flash");
+        if (q.type === "single-etc") {
+          const etcBox = card.querySelector(".etc-input");
+          if (label === "기타") {
+            etcBox.classList.add("show");
+          } else {
+            etcBox.classList.remove("show");
+            answers[q.id + "_etc"] = "";
+          }
+        }
+        updateProgress();
+      });
+      opts.appendChild(opt);
+    });
+    card.appendChild(opts);
+
+    if (q.type === "single-etc") {
+      const etcWrap = document.createElement("div");
+      etcWrap.className = "etc-wrap";
+      const etcInput = document.createElement("input");
+      etcInput.type = "text";
+      etcInput.className = "etc-input";
+      etcInput.placeholder = "사용 중인 AI 도구를 적어주세요";
+      etcInput.addEventListener("input", (e) => {
+        answers[q.id + "_etc"] = e.target.value;
+        updateProgress();
+      });
+      etcWrap.appendChild(etcInput);
+      card.appendChild(etcWrap);
+    }
+  } else if (q.type === "text") {
+    const ta = document.createElement("textarea");
+    ta.placeholder = "예: 개인 홈페이지, 원두 유통 자동화, SNS 콘텐츠 도구 등";
+    ta.addEventListener("input", (e) => {
+      answers[q.id] = e.target.value;
+    });
+    card.appendChild(ta);
+    const hint = document.createElement("div");
+    hint.className = "hint-optional";
+    hint.textContent = "이 문항은 답하지 않아도 괜찮아요.";
+    card.appendChild(hint);
+  }
+
+  mount.appendChild(card);
+});
+
+function isAnswered(q) {
+  if (q.type === "text") return true;
+  if (q.type === "single-etc") {
+    const val = answers[q.id];
+    if (!val) return false;
+    if (val === "기타") return !!(answers[q.id + "_etc"] && answers[q.id + "_etc"].trim().length > 0);
+    return true;
+  }
+  return !!answers[q.id];
+}
+
+function updateProgress() {
+  const answeredCount = questions.filter(q => q.type !== "text" && isAnswered(q)).length;
+  const pct = Math.round((answeredCount / requiredIds.length) * 100);
+  dripFill.style.width = pct + "%";
+  stepLabel.textContent = `${answeredCount} / ${requiredIds.length} 완료`;
+}
+
+function firstUnanswered() {
+  return questions.find(q => q.type !== "text" && !isAnswered(q));
+}
+
+submitBtn.addEventListener("click", async () => {
+  const missing = firstUnanswered();
+  if (missing) {
+    const card = document.getElementById("card-" + missing.id);
+    card.classList.add("flash");
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => card.classList.remove("flash"), 1600);
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "전달하는 중...";
+
+  const payload = {
+    name: nameInput.value.trim() || null,
+    q1: answers.q1 || null,
+    q2: answers.q2 || null,
+    q3: answers.q3 || null,
+    q3_etc: answers.q3_etc || null,
+    q4: answers.q4 || null,
+    q5: answers.q5 || null,
+    q6: answers.q6 || null,
+    q7: answers.q7 || null,
+    q8: answers.q8 || null,
+    q9: answers.q9 || null,
+    q10: answers.q10 || null
+  };
+
+  const sent = await sendToSupabase(payload);
+
+  buildResult(sent);
+  document.getElementById("mainView").classList.add("hidden-view");
+  document.getElementById("submitBar").classList.add("hidden-view");
+  document.getElementById("resultView").classList.remove("hidden-view");
+  window.scrollTo({top:0, behavior:"instant"});
+});
+
+document.getElementById("redoBtn").addEventListener("click", () => {
+  document.getElementById("resultView").classList.add("hidden-view");
+  document.getElementById("mainView").classList.remove("hidden-view");
+  document.getElementById("submitBar").classList.remove("hidden-view");
+  submitBtn.disabled = false;
+  submitBtn.textContent = "제출하기";
+  window.scrollTo({top:0, behavior:"instant"});
+});
+
+function buildResult(sent) {
+  const name = nameInput.value.trim();
+  const lines = [];
+  lines.push("[클로드코드 수업 사전질문지 결과]");
+  if (name) lines.push("이름: " + name);
+  lines.push("");
+
+  const listEl = document.getElementById("resultList");
+  listEl.innerHTML = "";
+
+  questions.forEach((q, idx) => {
+    let answerText = answers[q.id] || "(응답 없음)";
+    if (q.type === "single-etc" && answers[q.id] === "기타") {
+      const etc = answers[q.id + "_etc"] || "";
+      answerText = "기타 (" + etc + ")";
+    }
+    if (q.type === "text") {
+      answerText = (answers[q.id] && answers[q.id].trim().length > 0) ? answers[q.id].trim() : "(작성 안 함)";
+    }
+
+    lines.push(`Q${idx+1}. ${q.title}`);
+    lines.push(`→ ${answerText}`);
+    lines.push("");
+
+    const qLabel = q.eyebrow.includes("·") ? q.eyebrow.split("·")[1].trim() : q.eyebrow;
+    const row = document.createElement("div");
+    row.className = "result-row";
+    row.innerHTML = `<div class="rq">Q${idx+1} · ${qLabel}</div><div class="ra">${answerText}</div>`;
+    listEl.appendChild(row);
+  });
+
+  document.getElementById("copyBox").textContent = lines.join("\n");
+
+  const statusEl = document.getElementById("sendStatus");
+  if (sent) {
+    statusEl.textContent = "✓ 답변이 강사님께 자동으로 전달되었습니다.";
+    statusEl.className = "send-status ok";
+  } else {
+    statusEl.textContent = "⚠ 자동 전달에 실패했어요. 아래 버튼으로 결과를 복사해서 꼭 강사님께 보내주세요.";
+    statusEl.className = "send-status fail";
+  }
+}
+
+document.getElementById("copyBtn").addEventListener("click", async () => {
+  const text = document.getElementById("copyBox").textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  }
+  const btn = document.getElementById("copyBtn");
+  const original = btn.textContent;
+  btn.textContent = "복사 완료 ✓";
+  btn.classList.add("copied");
+  setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1800);
+});
+
+updateProgress();
+</script>
+</body>
+</html>
