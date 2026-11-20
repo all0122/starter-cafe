@@ -1,0 +1,14 @@
+# 이 저장소는 PUBLIC 이고 GitHub Pages 가 main 브랜치 루트를 그대로 서빙한다
+#   https://all0122.github.io/starter-cafe/
+# 커밋하는 파일은 전부 인터넷에 공개된다. 제외 수단이 따로 없으므로
+# 공개하면 안 되는 강의 자료는 여기 등록해 추적에서 빼둔다.
+# (파일은 디스크에 그대로 남는다. 백업이 필요하면 별도 private 저장소를 쓸 것)
+
+# 강의 자료 — 비공개
+*.pdf
+*.pptx
+*.docx
+바이브코딩_원데이_클래스_강의슬라이드.html
+
+# macOS
+.DS_Store
